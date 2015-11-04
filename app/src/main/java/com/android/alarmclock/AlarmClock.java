@@ -43,6 +43,8 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.adeebnqo.alarmapp.R;
+
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 

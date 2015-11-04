@@ -24,6 +24,8 @@ import android.preference.RingtonePreference;
 import android.provider.Settings;
 import android.util.AttributeSet;
 
+import com.adeebnqo.alarmapp.R;
+
 /**
  * The RingtonePreference does not have a way to get/set the current ringtone so
  * we override onSaveRingtone and onRestoreRingtone to get the same behavior.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_product_tour"
+        android:checked="true"
+        android:icon="@drawable/zip_box"
+        android:title="@string/product_tour"/>
+    <item
+        android:id="@+id/navigation_about_app"
+        android:icon="@drawable/information_outline"
+        android:title="@string/title_activity_advert"/>
+</menu>

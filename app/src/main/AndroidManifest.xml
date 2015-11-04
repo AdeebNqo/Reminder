@@ -1,7 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.alarmclock">
+        package="com.adeebnqo.alarmapp">
 
     <original-package android:name="com.android.alarmclock" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
@@ -11,12 +14,26 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:label="@string/app_label"
-                 android:icon="@drawable/ic_launcher_alarmclock">
+                 android:icon="@drawable/ic_launcher_alarmclock"
+        android:allowBackup="true"
+        android:theme="@style/AppTheme"
+        android:name=".activity.SwitchRinger">
 
-        <provider android:name="AlarmProvider" android:authorities="com.android.alarmclock" />
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
 
-        <activity android:name="AlarmClock" android:label="@string/app_label"
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/analytics_global_config" />
+
+        <provider android:name="com.android.alarmclock.AlarmProvider" android:authorities="com.android.alarmclock" />
+
+        <activity android:name="com.android.alarmclock.AlarmClock" android:label="@string/app_label"
                 android:configChanges="orientation|keyboardHidden|keyboard|navigation">
+        </activity>
+
+        <activity android:name="com.adeebnqo.alarmapp.activity.LandingActivityLoader" android:label="@string/app_label"
+            android:configChanges="orientation|keyboardHidden|keyboard|navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -24,16 +41,34 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="SettingsActivity" android:label="@string/settings">
+        <activity
+            android:name=".activity.AdvertActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/title_activity_advert">
+        </activity>
+
+
+        <activity android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent"
+            />
+
+        <activity android:name=".activity.CreateNewEventActivity" />
+        <activity android:name=".activity.EventActivity" />
+        <activity android:name=".activity.EventListActivity" />
+        <activity android:name=".activity.NoEventsActivity" />
+        <activity android:name=".activity.intro.Introduction" />
+
+        <activity android:name="com.android.alarmclock.SettingsActivity" android:label="@string/settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <activity android:name="SetAlarm" android:label="@string/set_alarm"
+        <activity android:name="com.android.alarmclock.SetAlarm" android:label="@string/set_alarm"
                 android:configChanges="orientation|keyboardHidden|keyboard|navigation" />
 
-        <activity android:name="AlarmAlert"
+        <activity android:name="com.android.alarmclock.AlarmAlert"
                 android:excludeFromRecents="true"
                 android:theme="@style/alarm_alert"
                 android:launchMode="singleInstance"
@@ -43,16 +78,16 @@
         <!-- This activity is basically the same as AlarmAlert but with a more
              generic theme. It also shows as full screen (with status bar) but
              with the wallpaper background. -->
-        <activity android:name="AlarmAlertFullScreen"
+        <activity android:name="com.android.alarmclock.AlarmAlertFullScreen"
                 android:excludeFromRecents="true"
                 android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
                 android:launchMode="singleInstance"
                 android:taskAffinity=""
                 android:configChanges="orientation|keyboardHidden|keyboard|navigation"/>
 
-        <activity android:name="ClockPicker" />
+        <activity android:name="com.android.alarmclock.ClockPicker" />
 
-        <receiver android:name="AlarmReceiver">
+        <receiver android:name="com.android.alarmclock.AlarmReceiver">
             <intent-filter>
                <action android:name="com.android.alarmclock.ALARM_ALERT" />
                <action android:name="alarm_killed" />
@@ -66,13 +101,13 @@
              intent. The service plays the alarm alert and vibrates the device.
              This allows the alert to continue playing even if another activity
              causes the AlarmAlert activity to pause. -->
-        <service android:name="AlarmKlaxon">
+        <service android:name="com.android.alarmclock.AlarmKlaxon">
             <intent-filter>
                 <action android:name="com.android.alarmclock.ALARM_ALERT" />
             </intent-filter>
         </service>
 
-        <receiver android:name="AlarmInitReceiver">
+        <receiver android:name="com.android.alarmclock.AlarmInitReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIME_SET" />
@@ -81,7 +116,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="AnalogAppWidgetProvider" android:label="@string/analog_gadget"
+        <receiver android:name="com.android.alarmclock.AnalogAppWidgetProvider" android:label="@string/analog_gadget"
         	android:icon="@drawable/ic_widget_analog_clock">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

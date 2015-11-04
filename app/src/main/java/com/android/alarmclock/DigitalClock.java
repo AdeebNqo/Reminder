@@ -32,6 +32,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.adeebnqo.alarmapp.R;
+
 import java.util.Calendar;
 
 /**

@@ -27,6 +27,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 
+import com.adeebnqo.alarmapp.R;
+
 /**
  * Clock face picker for the Alarm Clock application.
  */

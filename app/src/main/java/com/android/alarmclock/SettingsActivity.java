@@ -29,6 +29,8 @@ import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.provider.Settings;
 
+import com.adeebnqo.alarmapp.R;
+
 /**
  * Settings for the Alarm Clock.
  */

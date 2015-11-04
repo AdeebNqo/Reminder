@@ -25,6 +25,8 @@ import android.os.Parcelable;
 import android.provider.BaseColumns;
 import android.text.format.DateFormat;
 
+import com.adeebnqo.alarmapp.R;
+
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 

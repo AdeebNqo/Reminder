@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_data_uri">com.adeebnqo.alarmapp</string>
+    <string name="database_type">shared_preferences_v2</string>
+    <string name="banner_ad">0</string>
+    <integer name="minute_offset">2</integer>
+</resources>

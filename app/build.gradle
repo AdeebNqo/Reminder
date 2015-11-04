@@ -1,17 +1,65 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.android.alarmclock"
+        applicationId "com.adeebnqo.alarmapp"
+        minSdkVersion 14
+        targetSdkVersion 18
+    }
+
+    signingConfigs {
+        config {
+            keyAlias 'abc'
+            keyPassword 'abc'
+            storeFile file('abc')
+            storePassword 'abc'
+        }
     }
 
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "IS_DEBUG", "false"
+            signingConfig signingConfigs.config
+            resValue "string", "ga_dryRun", "false"
+        }
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "IS_DEBUG", "true"
+            versionNameSuffix "-debug"
+            resValue "string", "ga_dryRun", "true"
         }
     }
+    productFlavors {
+        free {
+            buildConfigField "boolean", "IS_PAID", "false"
+        }
+
+        paid {
+            buildConfigField "boolean", "IS_PAID", "true"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
+    compile 'com.google.android.gms:play-services-ads:7.3.0'
+    compile 'com.google.android.gms:play-services-analytics:7.3.0'
+    compile 'com.j256.ormlite:ormlite-android:4.46'
+    compile 'com.github.paolorotolo:appintro:2.0.0'
+    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:palette-v7:22.2.0'
 }

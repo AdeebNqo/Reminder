@@ -38,6 +38,8 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.TextView;
 
+import com.adeebnqo.alarmapp.R;
+
 import java.util.Calendar;
 
 /**

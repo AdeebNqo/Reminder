@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:switchringer="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="adeebnqo.Independent.switchringer.activity.EmptyList" >
+    <item android:id="@+id/action_add_new_event"
+        android:title="@string/create_new_event"
+        android:icon="@drawable/ic_add"
+        android:orderInCategory="100"
+        switchringer:showAsAction="always" />
+</menu>

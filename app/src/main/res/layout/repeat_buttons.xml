@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/linearLayout2"
+    android:layout_below="@+id/title_repeats"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    android:paddingBottom="30dp"
+    android:layout_marginLeft="11dp"
+    android:layout_marginRight="11dp"
+    android:layout_marginBottom="20dp">
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:text="@string/sunday"
+        android:textColor="@color/primary_text"
+        android:id="@+id/button_sunday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOff="@string/sunday"
+        android:textOn="@string/sunday" />
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:text="@string/monday"
+        android:textColor="@color/primary_text"
+        android:id="@+id/button_monday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOff="@string/monday"
+        android:textOn="@string/monday"/>
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:text="@string/tuesday"
+        android:id="@+id/button_tuesday"
+        android:textColor="@color/primary_text"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOn="@string/tuesday"
+        android:textOff="@string/tuesday"/>
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:textColor="@color/primary_text"
+        android:text="@string/wednsday"
+        android:id="@+id/button_wednesday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOn="@string/wednsday"
+        android:textOff="@string/wednsday"/>
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:text="@string/thurday"
+        android:textColor="@color/primary_text"
+        android:id="@+id/button_thursday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOn="@string/thurday"
+        android:textOff="@string/thurday" />
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:text="@string/friday"
+        android:textColor="@color/primary_text"
+        android:id="@+id/button_friday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:layout_marginRight="2dp"
+        android:textOn="@string/friday"
+        android:textOff="@string/friday"/>
+
+    <ToggleButton
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:textColor="@color/primary_text"
+        android:text="@string/saturday"
+        android:id="@+id/button_saturday"
+        android:background="@drawable/cube_button"
+        android:layout_weight="1"
+        android:textOn="@string/saturday"
+        android:textOff="@string/saturday"/>
+
+</LinearLayout>

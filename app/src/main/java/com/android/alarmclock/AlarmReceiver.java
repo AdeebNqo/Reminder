@@ -27,6 +27,8 @@ import android.content.BroadcastReceiver;
 import android.database.Cursor;
 import android.os.Parcel;
 
+import com.adeebnqo.alarmapp.R;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

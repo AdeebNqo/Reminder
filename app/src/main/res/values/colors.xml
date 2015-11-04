@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2008 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <resources>
+    <color name="blue_pressed">#ff0099cc</color>
+    <!--<color name="blue_normal">#ff33b5e5</color>-->
+    <color name="blue_normal">#808080</color>
+
+    <!--new colors used for the material design theme-->
+<!--    <color name="primary">#00BCD4</color>
+    <color name="primary_dark">#0097A7</color>
+    <color name="primary_light">#B2EBF2</color>
+    <color name="accent">#FF5722</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>-->
+    <color name="primary">#009688</color>   
+    <color name="primary_dark">#00796B</color>
+    <color name="primary_light">#B2DFDB</color>
+    <color name="accent">#FF5252</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
+    <array name="icon_colors">
+        <item>#d50000</item>
+        <item>#c51162</item>
+        <item>#aa00ff</item>
+        <item>#6200ea</item>
+        <item>#304ffe</item>
+        <item>#2962ff</item>
+        <item>#0091ea</item>
+        <item>#00b8d4</item>
+        <item>#00bfa5</item>
+        <item>#00c853</item>
+        <item>#64dd17</item>
+        <item>#ffd600</item>
+        <item>#ffab00</item>
+        <item>#dd2c00</item>
+        <item>#263238</item>
+    </array>
+
     <color name="ampm_off">#ff404040</color>
     <color name="ampm_on">#ffffffff</color>
 
     <color name="white">#ffffffff</color>
     <color name="red">#ffee0000</color>
     <color name="ltgrey">#ffe0e0e0</color>
+
 </resources>

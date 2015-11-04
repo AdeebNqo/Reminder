@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:switchringer="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_clear"
+        android:title="@string/clear"
+        android:orderInCategory="100"
+        switchringer:showAsAction="never" />
+
+    <item android:id="@+id/add_new"
+        android:title="add"
+        switchringer:showAsAction="ifRoom"/>
+
+</menu>
