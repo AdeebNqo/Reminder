@@ -61,15 +61,16 @@ public class AlarmProvider extends ContentProvider {
                        "enabled INTEGER, " +
                        "vibrate INTEGER, " +
                        "message TEXT, " +
-                       "alert TEXT);");
+                       "alert TEXT," +
+                       "duration INTEGER);");
 
             // insert default alarms
-            String insertMe = "INSERT INTO alarms " +
+            /*String insertMe = "INSERT INTO alarms " +
                     "(hour, minutes, daysofweek, alarmtime, enabled, vibrate, message, alert) " +
                     "VALUES ";
             db.execSQL(insertMe + "(7, 0, 127, 0, 0, 1, '', '');");
             db.execSQL(insertMe + "(8, 30, 31, 0, 0, 1, '', '');");
-            db.execSQL(insertMe + "(9, 00, 0, 0, 0, 1, '', '');");
+            db.execSQL(insertMe + "(9, 00, 0, 0, 0, 1, '', '');");*/
         }
 
         @Override
@@ -163,9 +164,6 @@ public class AlarmProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri url, ContentValues initialValues) {
-        if (sURLMatcher.match(url) != ALARMS) {
-            throw new IllegalArgumentException("Cannot insert into URL: " + url);
-        }
 
         ContentValues values;
         if (initialValues != null)
@@ -196,6 +194,9 @@ public class AlarmProvider extends ContentProvider {
 
         if (!values.containsKey(Alarm.Columns.ALERT))
             values.put(Alarm.Columns.ALERT, "");
+
+        if (!values.containsKey(Alarm.Columns.DURATION))
+            values.put(Alarm.Columns.DURATION, 0);
 
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long rowId = db.insert("alarms", Alarm.Columns.MESSAGE, values);

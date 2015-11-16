@@ -3,33 +3,25 @@ package com.adeebnqo.alarmapp.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ToggleButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
-
 import com.adeebnqo.alarmapp.R;
-import com.adeebnqo.alarmapp.exceptions.EventNotFoundException;
-import com.adeebnqo.alarmapp.exceptions.EventUpdateException;
-import com.adeebnqo.alarmapp.managers.EventManager;
+import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
 import com.adeebnqo.alarmapp.utils.ToastUtil;
-import com.squareup.picasso.Picasso;
+import com.android.alarmclock.Alarm;
 
 public class EventActivity extends Activity implements View.OnClickListener{
 
@@ -42,8 +34,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
     private TextView startTime;
     TextView activityTitle;
 
-    private Event chosenEvent;
-    private EventManager eventManager;
+    private Alarm chosenAlarm;
 
     private ToggleButton monday;
     private ToggleButton tuesday;
@@ -63,38 +54,30 @@ public class EventActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
-        eventManager = EventManager.getInstance();
-
-        try{
-
-            Intent intent = getIntent();
-            if (intent.hasExtra(BundleExtras.Event_ID.toString())){
-                int NOT_FOUND_CONSTANT = Integer.MAX_VALUE;
-                int identifier = intent.getIntExtra(BundleExtras.Event_ID.toString(), NOT_FOUND_CONSTANT);
-                if (identifier!=NOT_FOUND_CONSTANT){
-                    chosenEvent = eventManager.getEvent(identifier);
-                }
-                if (chosenEvent==null){
-                    returnToEventList();
-                }else{
-
-                    deactivatedColor = getResources().getColor(R.color.secondary_text);
-                    activatedColor = getResources().getColor(R.color.accent);
-
-                    setupFab();
-                    setupToolbar();
-                    setupHeaderImage();
-
-                    renderEventDetails();
-                }
-            }else{
-                returnToEventList();
+        Intent intent = getIntent();
+        if (intent.hasExtra(BundleExtras.Event_ID.toString())){
+            int NOT_FOUND_CONSTANT = Integer.MAX_VALUE;
+            int identifier = intent.getIntExtra(BundleExtras.Event_ID.toString(), NOT_FOUND_CONSTANT);
+            if (identifier!=NOT_FOUND_CONSTANT){
+                chosenAlarm = CustomAlarms.getAlarm(identifier);
             }
+            if (chosenAlarm ==null){
+                returnToEventList();
+            } else {
 
-        }catch(EventNotFoundException e){
-            e.printStackTrace();
+                deactivatedColor = getResources().getColor(R.color.secondary_text);
+                activatedColor = getResources().getColor(R.color.accent);
+
+                setupFab();
+                setupToolbar();
+                setupHeaderImage();
+
+                renderEventDetails();
+            }
+        } else {
             returnToEventList();
         }
+
     }
 
     private void setupToolbar(){
@@ -116,14 +99,14 @@ public class EventActivity extends Activity implements View.OnClickListener{
                 switch (item.getItemId()) {
                     case R.id.action_edit_event: {
                         Intent intent = new Intent(EventActivity.this, CreateNewEventActivity.class);
-                        intent.putExtra(BundleExtras.Event_ID.toString(), chosenEvent.getIdentifier());
+                        intent.putExtra(BundleExtras.Event_ID.toString(), chosenAlarm.id);
                         startActivityForResult(intent, EVENT_SCREEN_CODE);
                         break;
                     }
                     case R.id.action_delete_event: {
                         progress = progress.show(EventActivity.this, getString(R.string.delete_action),
                                 getString(R.string.please_wait), true);
-                        EventManager.getInstance().removeEvent(chosenEvent);
+                        CustomAlarms.deleteAlarm(chosenAlarm);
                         progress.dismiss();
                         setResult(RESULT_OK);
                         finish();
@@ -139,26 +122,25 @@ public class EventActivity extends Activity implements View.OnClickListener{
         headerImage = (ImageView) findViewById(R.id.header_img);
 
         final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(chosenEvent.getName());
+        collapsingToolbarLayout.setTitle(chosenAlarm.label);
 
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (Math.abs(verticalOffset) >= appBarLayout.getTotalScrollRange()){
+                if (Math.abs(verticalOffset)+30 >= appBarLayout.getTotalScrollRange()) {
                     //closed
-                    if (fab.getVisibility() != View.GONE){
+                    if (fab.getVisibility() != View.GONE) {
                         fab.setVisibility(View.GONE);
                     }
                 } else {
                     //open
-                    if (fab.getVisibility() != View.VISIBLE){
+                    if (fab.getVisibility() != View.VISIBLE) {
                         fab.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
-        //TODO setup time based img/animation
     }
     private void setupFab(){
         fab = (FloatingActionButton) findViewById(R.id.event_detail_fab);
@@ -166,40 +148,21 @@ public class EventActivity extends Activity implements View.OnClickListener{
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (chosenEvent.isActive()) {
-                    EventManager.getInstance().deActivateEvent(chosenEvent);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_inactive, getApplicationContext().getTheme()));
-                    } else {
-                        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_inactive));
-                    }
+                if (chosenAlarm.enabled) {
+                    CustomAlarms.deactivateAlarm(chosenAlarm);
                 } else {
-                    EventManager.getInstance().activateEvent(chosenEvent);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_active,  getApplicationContext().getTheme()));
-                    } else {
-                        fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_active));
-                    }
+                    CustomAlarms.activateAlarm(chosenAlarm);
                 }
+                drawIconOnFab();
             }
         });
 
         //initializing state of icon in FAB
-        if (chosenEvent.isActive()) {
-            //TODO fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_active));
-        }else{
-            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_inactive));
-        }
+        drawIconOnFab();
     }
 
-    private void renderEventDetails(){
-        duration = (TextView) findViewById(R.id.val_duration);
-        startTime = (TextView) findViewById(R.id.val_time);
-
-        duration.setText(""+chosenEvent.getDuration());
-        startTime.setText(chosenEvent.getFormattedTime());
-
-        if (!chosenEvent.isActive()) {
+    private void drawIconOnFab(){
+        if (!chosenAlarm.enabled) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_inactive, getApplicationContext().getTheme()));
             } else {
@@ -212,6 +175,14 @@ public class EventActivity extends Activity implements View.OnClickListener{
                 fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_active));
             }
         }
+    }
+
+    private void renderEventDetails(){
+        duration = (TextView) findViewById(R.id.val_duration);
+        startTime = (TextView) findViewById(R.id.val_time);
+
+        duration.setText("" + chosenAlarm.duration);
+        startTime.setText(chosenAlarm.getFormattedTime());
 
 
         //loading day-repeat buttons
@@ -224,7 +195,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
         sunday = (ToggleButton) findViewById(R.id.button_sunday); sunday.setOnClickListener(this);
 
         //setting color of day icons based on click status
-        Set<Integer> repeatDays =  chosenEvent.getDays();
+        Set<Integer> repeatDays =  new HashSet<>(); //TODO : chosenAlarm.getDays();
         if (null != repeatDays){
             for (Integer day : repeatDays){
                 switch(day){
@@ -274,7 +245,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
             ToggleButton butt = (ToggleButton) view;
             butt.setActivated(!butt.isActivated());
 
-            Set<Integer> currentSelectedDays = chosenEvent.getDays();
+            Set<Integer> currentSelectedDays = new HashSet<>();//TODO : chosenAlarm.getDays();
 
             int buttonId = butt.getId();
             switch (buttonId){
@@ -337,12 +308,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
             }
 
             //updating days
-            try {
-                eventManager.updateEventDays(chosenEvent, currentSelectedDays);
-            }catch (EventUpdateException e){
-                ToastUtil.showAppMsg(getString(R.string.internal_error));
-                butt.setActivated(!butt.isActivated());
-            }
+            //TODO : eventManager.updateEventDays(chosenAlarm, currentSelectedDays);
         }
     }
 
@@ -351,15 +317,14 @@ public class EventActivity extends Activity implements View.OnClickListener{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EVENT_SCREEN_CODE && resultCode == RESULT_OK){
 
-            Event editedEvent  = (Event) data.getExtras().get(BundleExtras.Event_OBJECT.toString());
-            editedEvent.setDays(chosenEvent.getDays());
-            editedEvent.setIdentifier(chosenEvent.getIdentifier());
+            Alarm editedEvent  = data.getExtras().getParcelable(BundleExtras.Event_OBJECT.toString());
+            //TODO : editedEvent.setDays(chosenAlarm.getDays());
+            editedEvent.id = chosenAlarm.id;
 
+            try {
 
-            try{
-
-                EventManager.getInstance().removeEvent(chosenEvent);
-                EventManager.getInstance().addEvent(editedEvent);
+                CustomAlarms.deleteAlarm(chosenAlarm);
+                CustomAlarms.addAlarm(editedEvent);
 
             } catch(Exception e) {
                 ToastUtil.showAppMsg(getString(R.string.internal_error));
@@ -368,7 +333,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
 
             Intent reloadedIntent = getIntent();
             reloadedIntent.removeExtra(BundleExtras.Event_ID.toString());
-            reloadedIntent.putExtra(BundleExtras.Event_ID.toString(), editedEvent.getIdentifier());
+            reloadedIntent.putExtra(BundleExtras.Event_ID.toString(), editedEvent.id);
             finish();
             startActivity(reloadedIntent);
         }

@@ -1,51 +1,34 @@
 package com.adeebnqo.alarmapp.activity;
 
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.activity.intro.Introduction;
 import com.adeebnqo.alarmapp.adapters.EventAdapter;
-import com.adeebnqo.alarmapp.adapters.NavAdapter;
-import com.adeebnqo.alarmapp.exceptions.EventAddException;
-import com.adeebnqo.alarmapp.interfaces.DataProvider;
-import com.adeebnqo.alarmapp.loaders.DatabaseTypeLoader;
-import com.adeebnqo.alarmapp.managers.EventManager;
+import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
 import com.adeebnqo.alarmapp.models.DataAvailableEvent;
-import com.adeebnqo.alarmapp.models.Event;
-import com.adeebnqo.alarmapp.models.NavigationItem;
 import com.adeebnqo.alarmapp.utils.Constants;
-import com.adeebnqo.alarmapp.utils.Convertor;
 import com.adeebnqo.alarmapp.utils.ToastUtil;
+import com.android.alarmclock.Alarm;
+
 import de.greenrobot.event.EventBus;
 
 public class EventListActivity extends ActionBarActivity{
@@ -70,8 +53,7 @@ public class EventListActivity extends ActionBarActivity{
     private RecyclerView recyclerView;
 
     //data provider and data
-    DataProvider dataProvider;
-    private List<Event> eventList;
+    private List<Alarm> alarmList;
     private EventBus eventBus;
 
     private String developerEmail = "androidpot107@gmail.com";
@@ -103,15 +85,6 @@ public class EventListActivity extends ActionBarActivity{
         introBeenShown = isIntroBeenShown();
 
         if (!introBeenShown){
-
-            //preloading database while the user is looking the app intro
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    dataProvider = DatabaseTypeLoader.getInstance().getDatabase();
-                }
-            }).start();
-
             showIntro();
         }else{
 
@@ -121,32 +94,18 @@ public class EventListActivity extends ActionBarActivity{
             the app has ben opened, do not show
             application setup/intro walkthrough
 
-
-            We need to check if the Database Loader
-            does not have a cached database object.
-            This is because in the case of ormlite,
-            loading retrieving the database takes
-            time therefore we cannot reload when
-            it's not neccessary to do so.
-
              */
-            if (DatabaseTypeLoader.isNullified()){
-
-                showLoadingScreen();
-
-            }else{
-                showEvents();
-            }
+            showEvents();
         }
     }
 
     private void showEventList(){
         setupToolbar();
 
-        eventList = dataProvider.getStoredEvents();
+        alarmList = CustomAlarms.getAlarms();
 
-        Event[] someEvents = new Event[eventList.size()];
-        eventAdapter = new EventAdapter(eventList.toArray(someEvents), this);
+        Alarm[] someEvents = new Alarm[alarmList.size()];
+        eventAdapter = new EventAdapter(alarmList.toArray(someEvents), this);
         recyclerView.setAdapter(eventAdapter);
 
         toolbar.setVisibility(View.VISIBLE);
@@ -185,19 +144,12 @@ public class EventListActivity extends ActionBarActivity{
     }
 
     private void showEvents(){
-        dataProvider = DatabaseTypeLoader.getInstance().getDatabase();
-        if (dataProvider==null){
-            ToastUtil.showAppMsg(getString(R.string.internal_error));
-            finish();
-        }else {
+        boolean hasStoredEvents = CustomAlarms.hasAlarms();
 
-            boolean hasStoredEvents = dataProvider.hasStoredEvents();
-
-            if (hasStoredEvents){
-                eventBus.post(new DataAvailableEvent(true));
-            }else{
-                eventBus.post(new DataAvailableEvent(false));
-            }
+        if (hasStoredEvents){
+            eventBus.post(new DataAvailableEvent(true));
+        }else{
+            eventBus.post(new DataAvailableEvent(false));
         }
     }
 
@@ -226,6 +178,15 @@ public class EventListActivity extends ActionBarActivity{
         setupNoEvents();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+            drawerLayout.closeDrawers();
+        }else{
+            super.onBackPressed();
+        }
+    }
+
     private void setupNavDrawer(){
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
@@ -245,7 +206,8 @@ public class EventListActivity extends ActionBarActivity{
             @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.navigation_product_tour:{
-                        showIntro();
+                        Intent intent = new Intent(EventListActivity.this, Introduction.class);
+                        startActivity(intent);
                         break;
                     }
                     case R.id.navigation_about_app:{
@@ -265,7 +227,7 @@ public class EventListActivity extends ActionBarActivity{
         drawerLayout.setDrawerListener(drawerToggle);
     }
 
-    private void setupToolbar(){
+    private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.events_toolbar);
         toolbar.setTitle(getString(R.string.events));
         setSupportActionBar(toolbar);
@@ -277,9 +239,9 @@ public class EventListActivity extends ActionBarActivity{
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        eventList = new LinkedList<>();
-        Event[] someEvents = new Event[eventList.size()];
-        eventAdapter = new EventAdapter(eventList.toArray(someEvents), this);
+        alarmList = new LinkedList<>();
+        Alarm[] someEvents= new Alarm[alarmList.size()];
+        eventAdapter = new EventAdapter(alarmList.toArray(someEvents), this);
         recyclerView.setAdapter(eventAdapter);
     }
 
@@ -307,33 +269,8 @@ public class EventListActivity extends ActionBarActivity{
                 break;
             }
             case R.id.action_clear:{
-                DatabaseTypeLoader.getInstance().getDatabase().clearAllEvents();
-                break;
-            }
-            case R.id.add_new:{
-                try{
-
-                    Event event = new Event();
-                    event.setIdentifier(1);
-                    event.setHour(17); event.setMinute(9);
-                    event.setRinger(AudioManager.RINGER_MODE_SILENT);
-                    event.setName("Fake event like a boss.");
-
-                    EventManager.getInstance().addEvent(event);
-
-                    Event event2 = new Event();
-                    event2.setIdentifier(12);
-                    event2.setHour(9); event2.setMinute(00);
-                    event2.setRinger(AudioManager.RINGER_MODE_VIBRATE);
-                    event2.setName("YOLO meeting.");
-
-                    EventManager.getInstance().addEvent(event2);
-
-                    ToastUtil.showAppMsg("Created fake event!");
-
-                }catch(EventAddException e){
-                    e.printStackTrace();
-                }
+                ToastUtil.showAppMsg("Not implemented!");
+                //TODO : DatabaseTypeLoader.getInstance().getDatabase().clearAllEvents();
                 break;
             }
             case R.id.action_contact_dev:{
@@ -357,15 +294,13 @@ public class EventListActivity extends ActionBarActivity{
         if (requestCode==EVENT_LIST_SCREEN_CODE && resultCode==RESULT_OK){
 
             if (data !=null && data.hasExtra(BundleExtras.Event_OBJECT.toString())){
-                try{
-                    Event newEvent = (Event) data.getExtras().get(BundleExtras.Event_OBJECT.toString());
-                    EventManager.getInstance().addEvent(newEvent);
-                }
-                catch(EventAddException e){
-                    e.printStackTrace();
-                }
+                Alarm savedAlarm =  data.getExtras().getParcelable(BundleExtras.Event_OBJECT.toString());
+                CustomAlarms.addAlarm(savedAlarm);
             }
         }
+
+        //TODO : Investigate the use of notifyDataSetChanged or Something instead of reloading activity.
+        //reload activity
         finish();
         startActivity(getIntent());
     }

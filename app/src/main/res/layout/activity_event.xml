@@ -42,7 +42,6 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 android:id="@+id/event_detail_tooolbar"
-                android:background="@color/primary"
                 />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -61,7 +60,8 @@
         <include layout="@layout/details"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:id="@+id/include2" />
+            android:id="@+id/include2"
+            android:layout_marginBottom="20dp"/>
 
     </android.support.v4.widget.NestedScrollView>
 

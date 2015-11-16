@@ -44,7 +44,9 @@ public class Introduction extends AppIntro {
 
         Intent intent = new Intent(Introduction.this, EventListActivity.class);
         startActivity(intent);
-        finish();
+        if (isTaskRoot()) {
+            finish();
+        }
     }
 
     private void setIntroShown(){

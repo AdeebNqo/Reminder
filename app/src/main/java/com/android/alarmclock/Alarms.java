@@ -30,9 +30,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.provider.Settings;
 import android.text.format.DateFormat;
-
 import java.util.Calendar;
-import java.text.DateFormatSymbols;
 
 /**
  * The Alarms provider supplies info about Alarm Clock settings
@@ -160,12 +158,13 @@ public class Alarms {
      * @param vibrate        corresponds to the VIBRATE column
      * @param message        corresponds to the MESSAGE column
      * @param alert          corresponds to the ALERT column
+     * @param duration       corresponds to the DURATION column
      * @return Time when the alarm will fire.
      */
     public static long setAlarm(
             Context context, int id, boolean enabled, int hour, int minutes,
             Alarm.DaysOfWeek daysOfWeek, boolean vibrate, String message,
-            String alert) {
+            String alert, int duration) {
 
         ContentValues values = new ContentValues(8);
         ContentResolver resolver = context.getContentResolver();
@@ -188,11 +187,17 @@ public class Alarms {
         values.put(Alarm.Columns.VIBRATE, vibrate);
         values.put(Alarm.Columns.MESSAGE, message);
         values.put(Alarm.Columns.ALERT, alert);
-        resolver.update(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id),
-                        values, null, null);
+        values.put(Alarm.Columns.DURATION, duration);
+        int num = resolver.update(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id),
+                values, null, null);
+        if (num == 0) {
+                resolver.insert(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id), values);
+        }
+        Log.v("foobar Changed "+num+" rows man!");
 
         long timeInMillis =
                 calculateAlarm(hour, minutes, daysOfWeek).getTimeInMillis();
+        Log.v("foobar : timeInMillis is "+timeInMillis);
 
         if (enabled) {
             // If this alarm fires before the next snooze, clear the snooze to
@@ -312,11 +317,15 @@ public class Alarms {
      * otherwise loads all alarms, activates next alert.
      */
     public static void setNextAlert(final Context context) {
+        Log.v("foobar : setNextAlert is called");
+
         if (!enableSnoozeAlert(context)) {
             Alarm alarm = calculateNextAlert(context);
             if (alarm != null) {
+                Log.v("foobar : alarm is not null");
                 enableAlert(context, alarm, alarm.time);
             } else {
+                Log.v("foobar : alarm is null");
                 disableAlert(context);
             }
         }

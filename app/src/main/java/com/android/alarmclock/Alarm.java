@@ -23,12 +23,11 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
-import android.text.format.DateFormat;
-
 import com.adeebnqo.alarmapp.R;
-
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public final class Alarm implements Parcelable {
 
@@ -55,12 +54,16 @@ public final class Alarm implements Parcelable {
         p.writeInt(enabled ? 1 : 0);
         p.writeInt(hour);
         p.writeInt(minutes);
+        if (daysOfWeek == null){
+            daysOfWeek = new DaysOfWeek(0x00);
+        }
         p.writeInt(daysOfWeek.getCoded());
         p.writeLong(time);
         p.writeInt(vibrate ? 1 : 0);
         p.writeString(label);
         p.writeParcelable(alert, flags);
         p.writeInt(silent ? 1 : 0);
+        p.writeInt(duration);
     }
     //////////////////////////////
     // end Parcelable apis
@@ -126,6 +129,13 @@ public final class Alarm implements Parcelable {
         public static final String ALERT = "alert";
 
         /**
+         * Minutes the alarm will take effect
+         * <P>Type: INTEGER</P>
+         */
+        public static final String DURATION = "duration";
+
+
+        /**
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER =
@@ -136,7 +146,7 @@ public final class Alarm implements Parcelable {
 
         static final String[] ALARM_QUERY_COLUMNS = {
             _ID, HOUR, MINUTES, DAYS_OF_WEEK, ALARM_TIME,
-            ENABLED, VIBRATE, MESSAGE, ALERT };
+            ENABLED, VIBRATE, MESSAGE, ALERT, DURATION};
 
         /**
          * These save calls to cursor.getColumnIndexOrThrow()
@@ -151,6 +161,7 @@ public final class Alarm implements Parcelable {
         public static final int ALARM_VIBRATE_INDEX = 6;
         public static final int ALARM_MESSAGE_INDEX = 7;
         public static final int ALARM_ALERT_INDEX = 8;
+        public static final int ALARM_DURATION_INDEX = 9;
     }
     //////////////////////////////
     // End column definitions
@@ -167,7 +178,12 @@ public final class Alarm implements Parcelable {
     public String     label;
     public Uri        alert;
     public boolean    silent;
+    public int ringerMode;
+    public int duration;
 
+    public Alarm(){
+
+    }
     public Alarm(Cursor c) {
         id = c.getInt(Columns.ALARM_ID_INDEX);
         enabled = c.getInt(Columns.ALARM_ENABLED_INDEX) == 1;
@@ -177,6 +193,7 @@ public final class Alarm implements Parcelable {
         time = c.getLong(Columns.ALARM_TIME_INDEX);
         vibrate = c.getInt(Columns.ALARM_VIBRATE_INDEX) == 1;
         label = c.getString(Columns.ALARM_MESSAGE_INDEX);
+        duration = c.getInt(Columns.ALARM_DURATION_INDEX);
         String alertString = c.getString(Columns.ALARM_ALERT_INDEX);
         if (Alarms.ALARM_ALERT_SILENT.equals(alertString)) {
             if (Log.LOGV) {
@@ -208,6 +225,7 @@ public final class Alarm implements Parcelable {
         label = p.readString();
         alert = (Uri) p.readParcelable(null);
         silent = p.readInt() == 1;
+        duration = p.readInt();
     }
 
     public String getLabelOrDefault(Context context) {
@@ -228,7 +246,7 @@ public final class Alarm implements Parcelable {
      * 0x20: Saturday
      * 0x40: Sunday
      */
-    static final class DaysOfWeek {
+    public static final class DaysOfWeek {
 
         private static int[] DAY_MAP = new int[] {
             Calendar.MONDAY,
@@ -243,7 +261,7 @@ public final class Alarm implements Parcelable {
         // Bitmask of all repeating days
         private int mDays;
 
-        DaysOfWeek(int days) {
+        public DaysOfWeek(int days) {
             mDays = days;
         }
 
@@ -341,4 +359,23 @@ public final class Alarm implements Parcelable {
             return dayCount;
         }
     }
+
+    public Calendar getRawTimeAsCalender(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minutes);
+        return cal;
+    }
+
+    public Date getRawTime(){
+        Date d = getRawTimeAsCalender().getTime();
+        return d;
+    }
+
+    public String getFormattedTime(){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        Date d = getRawTime();
+        return sdf.format(d);
+    }
+
 }

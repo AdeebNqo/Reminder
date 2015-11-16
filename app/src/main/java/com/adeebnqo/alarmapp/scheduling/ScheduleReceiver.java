@@ -8,18 +8,17 @@ import android.util.Log;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import com.adeebnqo.alarmapp.R;
-import com.adeebnqo.alarmapp.exceptions.EventNotFoundException;
-import com.adeebnqo.alarmapp.managers.EventManager;
+import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
 import com.adeebnqo.alarmapp.utils.AppNotification;
 import com.adeebnqo.alarmapp.utils.ApplicationData;
+import com.android.alarmclock.Alarm;
 
 public class ScheduleReceiver extends BroadcastReceiver {
 
@@ -48,69 +47,62 @@ public class ScheduleReceiver extends BroadcastReceiver {
 
         int oldRingerMode = audioManager.getRingerMode();
 
-        try {
+        int eventId = intent.getExtras().getInt(BundleExtras.Event_ID.toString());
+        Alarm event = CustomAlarms.getAlarm(eventId);
 
-            int eventId = intent.getExtras().getInt(BundleExtras.Event_ID.toString());
-            Event event = EventManager.getInstance().getEvent(eventId);
+        if (event!=null && event.enabled) {
 
-            if (event!=null && event.isActive()) {
+            int duration = event.duration * 60000;
+            int ringerType = event.ringerMode;
+            Set<Integer> days = new HashSet<>();//TODO : event.getDays();
 
-                int duration = event.getDuration() * 60000;
-                int ringerType = event.getRinger();
-                Set<Integer> days = event.getDays();
+            //if the ringer is currently the one we need to change it to
+            //there is no need to do anything
+            if (oldRingerMode != ringerType) {
 
-                //if the ringer is currently the one we need to change it to
-                //there is no need to do anything
-                if (oldRingerMode != ringerType) {
+                Calendar rawScheduledTime = event.getRawTimeAsCalender();
+                rawScheduledTime.add(Calendar.MINUTE, -1 * minOffset);
+                Date eventScheduledTime = rawScheduledTime.getTime();;
+                Date currentTime = Calendar.getInstance().getTime();
 
-                    Calendar rawScheduledTime = event.getRawTimeAsCalender();
-                    rawScheduledTime.add(Calendar.MINUTE, -1 * minOffset);
-                    Date eventScheduledTime = rawScheduledTime.getTime();;
-                    Date currentTime = Calendar.getInstance().getTime();
+                long timeDiff = currentTime.getTime() - eventScheduledTime.getTime();
+                int minDiff = (int) (timeDiff % (1000 * 60 * 60));
 
-                    long timeDiff = currentTime.getTime() - eventScheduledTime.getTime();
-                    int minDiff = (int) (timeDiff % (1000 * 60 * 60));
+                if (minDiff >= 0 && minDiff <= duration+minOffset) {
 
-                    if (minDiff >= 0 && minDiff <= duration+minOffset) {
+                    Log.d("foobar", "Event is within time constraints.");
 
-                        Log.d("foobar", "Event is within time constraints.");
+                    if (days.isEmpty()) {
 
-                        if (days.isEmpty()) {
+                        switchMode(event);
+                        resetWhenTimedOut(oldRingerMode, event);
+                        CustomAlarms.deactivateAlarm(event);
 
-                            switchMode(event);
-                            resetWhenTimedOut(oldRingerMode, event);
-                            EventManager.getInstance().deActivateEvent(event);
+                        Log.d("foobar", "Event will not be used again automatically.");
 
-                            Log.d("foobar", "Event will not be used again automatically.");
-
-                        } else {
-
-                            Calendar today = Calendar.getInstance();
-                            int day = today.get(Calendar.DAY_OF_WEEK);
-                            if (days.contains(day)) {
-                                switchMode(event);
-                                //the switch is scheduled for today
-                                resetWhenTimedOut(oldRingerMode, event);
-                            }
-                        }
                     } else {
-                        Log.d("foobar", "Event is outside time constraints.");
-                    }
-                }
-            } else {
-                Log.d("foobar", "1. None active event found.");
-            }
 
-        } catch(EventNotFoundException e){
-            Log.d("foobar", "2. None active event found.");
-            e.printStackTrace();
+                        Calendar today = Calendar.getInstance();
+                        int day = today.get(Calendar.DAY_OF_WEEK);
+                        if (days.contains(day)) {
+                            switchMode(event);
+                            //the switch is scheduled for today
+                            resetWhenTimedOut(oldRingerMode, event);
+                        }
+                    }
+                } else {
+                    Log.d("foobar", "Event is outside time constraints.");
+                }
+            }
+        } else {
+            Log.d("foobar", "1. None active event found.");
         }
     }
 
-    private void switchMode(Event event) {
+    private void switchMode(Alarm event) {
 
-        int ringerType = event.getRinger();
-        String eventName = event.getName();
+        int ringerType = event.ringerMode;
+        String eventName = event.label;
 
         audioManager.setRingerMode(ringerType);
         if (context!=null) {
@@ -133,22 +125,19 @@ public class ScheduleReceiver extends BroadcastReceiver {
         }
     }
 
-    private void resetWhenTimedOut(int oldRingerMode, final Event event) {
+    private void resetWhenTimedOut(int oldRingerMode, final Alarm alarm) {
 
-        Log.d("foobar", "Event will will be reset.");
-
-        int period = event.getDuration();
+        int period = alarm.duration;
 
         //clone event -- kind of. Creating an event for old ringer mode since
         //we're resetting it the ringer mode
-        final Event clonedEvent = new Event();
-        clonedEvent.setRinger(oldRingerMode);
-        clonedEvent.setName(event.getName());
+        final Alarm clonedAlarm = new Alarm();
+        clonedAlarm.ringerMode = oldRingerMode;
+        clonedAlarm.label = alarm.label;
 
         Runnable task = new Runnable() {
             public void run() {
-                switchMode(clonedEvent);
-                Log.d("foobar", "Event is now being reset.");
+                switchMode(clonedAlarm);
             }
         };
 

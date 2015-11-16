@@ -1,6 +1,5 @@
 package com.adeebnqo.alarmapp.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -12,21 +11,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.adapters.NavAdapter;
 import com.adeebnqo.alarmapp.exceptions.EventAddException;
-import com.adeebnqo.alarmapp.managers.EventManager;
+import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
 import com.adeebnqo.alarmapp.models.NavigationItem;
 import com.adeebnqo.alarmapp.utils.ToastUtil;
+import com.android.alarmclock.Alarm;
 
 public class NoEventsActivity extends ActionBarActivity implements AdapterView.OnItemClickListener{
 
@@ -125,31 +121,6 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
                 startActivity(intent);
                 break;
             }
-            case R.id.add_new:{
-                try{
-
-                    Event event = new Event();
-                    event.setIdentifier(1);
-                    event.setHour(17); event.setMinute(9);
-                    event.setRinger(AudioManager.RINGER_MODE_SILENT);
-                    event.setName("Fake event like a boss.");
-
-                    EventManager.getInstance().addEvent(event);
-
-                    Event event2 = new Event();
-                    event2.setIdentifier(12);
-                    event2.setHour(9); event2.setMinute(00);
-                    event2.setRinger(AudioManager.RINGER_MODE_VIBRATE);
-                    event2.setName("YOLO meeting.");
-
-                    EventManager.getInstance().addEvent(event2);
-
-                    ToastUtil.showAppMsg("Created fake event!");
-
-                }catch(EventAddException e){
-                    e.printStackTrace();
-                }
-            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -173,16 +144,12 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==NO_EVENTS_SCREEN_CODE && resultCode==RESULT_OK){
-            Event newEvent = (Event) data.getExtras().get(BundleExtras.Event_OBJECT.toString());
+            Alarm newEvent = data.getExtras().getParcelable(BundleExtras.Event_OBJECT.toString());
 
-            try{
-                EventManager.getInstance().addEvent(newEvent);
-                Intent intent = new Intent(NoEventsActivity.this, LandingActivityLoader.class);
-                startActivity(intent);
-                finish();
-            }catch (EventAddException e){
-                e.printStackTrace();
-            }
+            CustomAlarms.addAlarm(newEvent);
+            Intent intent = new Intent(NoEventsActivity.this, LandingActivityLoader.class);
+            startActivity(intent);
+            finish();
         }
     }
 }

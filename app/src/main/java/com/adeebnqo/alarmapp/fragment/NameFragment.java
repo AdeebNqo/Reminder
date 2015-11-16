@@ -12,16 +12,12 @@ import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
 import com.adeebnqo.alarmapp.R;
-import com.adeebnqo.alarmapp.exceptions.EventAddException;
-import com.adeebnqo.alarmapp.interfaces.DataProvider;
-import com.adeebnqo.alarmapp.loaders.DatabaseTypeLoader;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
-import com.adeebnqo.alarmapp.utils.ToastUtil;
+import com.android.alarmclock.Alarm;
 
 public class NameFragment extends Fragment{
 
-    private Event currentEvent;
+    private Alarm currentEvent;
 
     private ToggleButton monday;
     private ToggleButton tuesday;
@@ -39,10 +35,10 @@ public class NameFragment extends Fragment{
     private OnNameGivenListener mListener;
     private String eventName;
 
-    public static NameFragment newInstance(Event someEvent) {
+    public static NameFragment newInstance(Alarm someEvent) {
         NameFragment fragment = new NameFragment();
         Bundle args = new Bundle();
-        args.putSerializable(BundleExtras.Event_OBJECT.toString(), someEvent);
+        args.putParcelable(BundleExtras.Event_OBJECT.toString(), someEvent);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,7 +51,7 @@ public class NameFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentEvent = (Event) getArguments().getSerializable(BundleExtras.Event_OBJECT.toString());
+            currentEvent = getArguments().getParcelable(BundleExtras.Event_OBJECT.toString());
         }
     }
 
@@ -92,7 +88,7 @@ public class NameFragment extends Fragment{
         prevButton.setVisibility(View.GONE);
 
         if (currentEvent!=null) {
-            editText.setText(currentEvent.getName());
+            editText.setText(currentEvent.label);
         }
 
         if (nextButtonClickListener == null){

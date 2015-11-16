@@ -1,8 +1,6 @@
 package com.adeebnqo.alarmapp.fragment;
 
 import android.app.Activity;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,11 +11,11 @@ import android.widget.TimePicker;
 
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
+import com.android.alarmclock.Alarm;
 
 public class TimeFragment extends Fragment {
 
-    private Event currentEvent;
+    private Alarm currentEvent;
 
     private ImageButton prevButton;
     private ImageButton nextButton;
@@ -27,10 +25,10 @@ public class TimeFragment extends Fragment {
     private View.OnClickListener prevClickListener;
     private View.OnClickListener nextClickListener;
 
-    public static TimeFragment newInstance(Event someEvent) {
+    public static TimeFragment newInstance(Alarm someEvent) {
         TimeFragment fragment = new TimeFragment();
         Bundle args = new Bundle();
-        args.putSerializable(BundleExtras.Event_OBJECT.toString(), someEvent);
+        args.putParcelable(BundleExtras.Event_OBJECT.toString(), someEvent);
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,7 +41,7 @@ public class TimeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentEvent = (Event) getArguments().getSerializable(BundleExtras.Event_OBJECT.toString());
+            currentEvent = getArguments().getParcelable(BundleExtras.Event_OBJECT.toString());
         }
     }
 
@@ -104,8 +102,8 @@ public class TimeFragment extends Fragment {
         timePicker.setIs24HourView(true);
 
         if (currentEvent!=null){
-            timePicker.setCurrentHour(currentEvent.getHour());
-            timePicker.setCurrentMinute(currentEvent.getMinute());
+            timePicker.setCurrentHour(currentEvent.hour);
+            timePicker.setCurrentMinute(currentEvent.minutes);
         }
     }
 

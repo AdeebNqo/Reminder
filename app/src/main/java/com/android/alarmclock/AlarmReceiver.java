@@ -20,15 +20,11 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.BroadcastReceiver;
-import android.database.Cursor;
 import android.os.Parcel;
-
 import com.adeebnqo.alarmapp.R;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,17 +40,21 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.v("onReceived called!");
         if (Alarms.ALARM_KILLED.equals(intent.getAction())) {
+            Log.v("izolo ekkkkkkkk c");
             // The alarm has been killed, update the notification
             updateNotification(context, (Alarm)
                     intent.getParcelableExtra(Alarms.ALARM_INTENT_EXTRA),
                     intent.getIntExtra(Alarms.ALARM_KILLED_TIMEOUT, -1));
             return;
         } else if (Alarms.CANCEL_SNOOZE.equals(intent.getAction())) {
+            Log.v("izolo ekkkkkkkk d");
             Alarms.saveSnoozeAlert(context, -1, -1);
             return;
         }
 
+        Log.v("izolo ekkkkkkkk a");
         Alarm alarm = null;
         // Grab the alarm from the intent. Since the remote AlarmManagerService
         // fills in the Intent to add some extra data, it must unparcel the
@@ -67,6 +67,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             in.setDataPosition(0);
             alarm = Alarm.CREATOR.createFromParcel(in);
         }
+        Log.v("izolo ekkkkkkkk b");
 
         if (alarm == null) {
             Log.v("AlarmReceiver failed to parse the alarm from the intent");
@@ -142,8 +143,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String label = alarm.getLabelOrDefault(context);
         Notification n = new Notification(R.drawable.stat_notify_alarm,
                 label, alarm.time);
-        n.setLatestEventInfo(context, label,
-                context.getString(R.string.alarm_notify_text),
+        n.setLatestEventInfo(context, label, "asdsadasddsad",
                 pendingNotify);
         n.flags |= Notification.FLAG_SHOW_LIGHTS
                 | Notification.FLAG_ONGOING_EVENT;

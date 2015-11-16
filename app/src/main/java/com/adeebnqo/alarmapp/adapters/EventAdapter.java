@@ -3,19 +3,15 @@ package com.adeebnqo.alarmapp.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.media.AudioManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
 
@@ -23,25 +19,20 @@ import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.activity.EventActivity;
 import com.adeebnqo.alarmapp.activity.EventListActivity;
 import com.adeebnqo.alarmapp.interfaces.RecyclerViewOnItemClickListener;
-import com.adeebnqo.alarmapp.loaders.FontLoader;
-import com.adeebnqo.alarmapp.managers.EventManager;
+import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
 import com.adeebnqo.alarmapp.utils.ApplicationData;
-import com.adeebnqo.alarmapp.utils.Constants;
+import com.android.alarmclock.Alarm;
 
-/**
- * Created by adeeb on 5/1/15.
- */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> implements RecyclerViewOnItemClickListener{
 
     private Context context;
-    private Event[] events;
+    private Alarm[] events;
 
     static Random random = new Random();
     static int[] iconColors = ApplicationData.getContext().getResources().getIntArray(R.array.icon_colors);
 
-    public EventAdapter(Event[] myDataset, Activity activity) {
+    public EventAdapter(Alarm[] myDataset, Activity activity) {
         events = myDataset;
         context = activity;
     }
@@ -113,28 +104,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        final Event chosenEvent = events[position];
-
-       /* //hiding divider for item last on the list
-        if (position==events.length-1){
-            holder.divider.setVisibility(View.INVISIBLE);
-        }else{
-            holder.divider.setVisibility(View.VISIBLE);
-        }*/
+        final Alarm chosenEvent = events[position];
 
         //setting time and name of event
         holder.eventTime.setText(chosenEvent.getFormattedTime());
-        holder.eventName.setText(chosenEvent.getName());
+        holder.eventName.setText(chosenEvent.label);
 
         //setting (in)active using checkbox on the side
-        if (chosenEvent.isActive()){
+        if (chosenEvent.enabled){
             holder.activeCheckbox.setChecked(true);
         }else{
             holder.activeCheckbox.setChecked(false);
         }
 
         //changing ringer icon
-        switch (chosenEvent.getRinger()){
+        switch (chosenEvent.ringerMode){
             case AudioManager.RINGER_MODE_NORMAL:{
                 holder.ringerType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_normal_ring));
                 break;
@@ -161,10 +145,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     //go to the event detail activity
     @Override
     public void onClicked(int position) {
-        Event chosenEvent = events[position];
+        Alarm chosenEvent = events[position];
 
         Intent intent = new Intent(context, EventActivity.class);
-        intent.putExtra(BundleExtras.Event_ID.toString(), chosenEvent.getIdentifier());
+        intent.putExtra(BundleExtras.Event_ID.toString(), chosenEvent.id);
 
         ((Activity) context).startActivityForResult(intent, EventListActivity.EVENT_LIST_SCREEN_CODE);
     }
@@ -174,17 +158,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     public void onSubViewClicked(View view, int position) {
         if (view instanceof CheckBox){
             CheckBox box = (CheckBox) view;
-            Event chosenEvent = events[position];
-            EventManager eventManager = EventManager.getInstance();
+            Alarm chosenEvent = events[position];
             if (box.isChecked()){
-                eventManager.activateEvent(chosenEvent);
+                CustomAlarms.activateAlarm(chosenEvent);
             }else{
-                eventManager.deActivateEvent(chosenEvent);
+                CustomAlarms.deactivateAlarm(chosenEvent);
             }
         }
     }
 
-    public void changeEventList(Event[] newEvents){
+    public void changeEventList(Alarm[] newEvents){
         events = newEvents;
         notifyDataSetChanged();
     }

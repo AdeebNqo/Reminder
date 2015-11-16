@@ -2,9 +2,7 @@ package com.adeebnqo.alarmapp.fragment;
 
 import android.app.Activity;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,10 +12,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.models.BundleExtras;
-import com.adeebnqo.alarmapp.models.Event;
+import com.android.alarmclock.Alarm;
 
 public class DurationFragment extends Fragment {
     private OnDurationEnteredListener mListener;
@@ -30,7 +27,7 @@ public class DurationFragment extends Fragment {
     private View.OnClickListener nextClickListener;
     private View.OnClickListener prevClickListener;
 
-    private Event currentEvent;
+    private Alarm currentEvent;
 
     private RadioButton muteButton;
     private RadioButton vibrateButton;
@@ -45,7 +42,7 @@ public class DurationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             if (getArguments() != null) {
-                currentEvent = (Event) getArguments().getSerializable(BundleExtras.Event_OBJECT.toString());
+                currentEvent = getArguments().getParcelable(BundleExtras.Event_OBJECT.toString());
             }
         }
     }
@@ -128,6 +125,7 @@ public class DurationFragment extends Fragment {
                                 }
                             } catch (Exception e) {
                                 editText.setError(getString(R.string.invalid_duration));
+                                e.printStackTrace();
                             }
 
                         }
@@ -141,7 +139,7 @@ public class DurationFragment extends Fragment {
         prevButton.setOnClickListener(prevClickListener);
 
         if (currentEvent!=null){
-            switch (currentEvent.getRinger()){
+            switch (currentEvent.ringerMode){
                 case AudioManager.RINGER_MODE_VIBRATE:
                     vibrateButton = (RadioButton) view.findViewById(R.id.vibrate_choice);
                     vibrateButton.setSelected(true);
@@ -158,7 +156,7 @@ public class DurationFragment extends Fragment {
                 }
             }
 
-            int currentDuration = currentEvent.getDuration();
+            int currentDuration = currentEvent.duration;
             if (currentDuration > 0){
                 editText.setText(""+currentDuration);
             }

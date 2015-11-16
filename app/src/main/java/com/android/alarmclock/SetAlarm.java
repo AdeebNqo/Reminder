@@ -59,6 +59,7 @@ public class SetAlarm extends PreferenceActivity
     private boolean mEnabled;
     private int     mHour;
     private int     mMinutes;
+    private int mDuration;
 
     /**
      * Set an alarm.  Requires an Alarms.ALARM_ID to be passed in as an
@@ -106,6 +107,7 @@ public class SetAlarm extends PreferenceActivity
         mMinutes = alarm.minutes;
         mRepeatPref.setDaysOfWeek(alarm.daysOfWeek);
         mVibratePref.setChecked(alarm.vibrate);
+        mDuration = alarm.duration;
         // Give the alert uri to the preference.
         mAlarmPref.setAlert(alarm.alert);
         updateTime();
@@ -197,7 +199,7 @@ public class SetAlarm extends PreferenceActivity
         final String alert = mAlarmPref.getAlertString();
         long time = Alarms.setAlarm(this, mId, mEnabled, mHour, mMinutes,
                 mRepeatPref.getDaysOfWeek(), mVibratePref.isChecked(),
-                mLabel.getText(), alert);
+                mLabel.getText(), alert, 0);
 
         if (mEnabled) {
             popAlarmSetToast(this, time);
@@ -212,13 +214,13 @@ public class SetAlarm extends PreferenceActivity
     private static void saveAlarm(
             Context context, int id, boolean enabled, int hour, int minute,
             Alarm.DaysOfWeek daysOfWeek, boolean vibrate, String label,
-            String alert, boolean popToast) {
+            String alert, boolean popToast, int mDuration) {
         if (Log.LOGV) Log.v("** saveAlarm " + id + " " + label + " " + enabled
                 + " " + hour + " " + minute + " vibe " + vibrate);
 
         // Fix alert string first
         long time = Alarms.setAlarm(context, id, enabled, hour, minute,
-                daysOfWeek, vibrate, label, alert);
+                daysOfWeek, vibrate, label, alert, mDuration);
 
         if (enabled && popToast) {
             popAlarmSetToast(context, time);
@@ -325,7 +327,7 @@ public class SetAlarm extends PreferenceActivity
         int hour = nowHour + (nowMinute == 0 ? 1 : 0);
 
         saveAlarm(this, mId, true, hour, minutes, mRepeatPref.getDaysOfWeek(),
-                true, mLabel.getText(), mAlarmPref.getAlertString(), true);
+                true, mLabel.getText(), mAlarmPref.getAlertString(), true, mDuration);
     }
 
 }
