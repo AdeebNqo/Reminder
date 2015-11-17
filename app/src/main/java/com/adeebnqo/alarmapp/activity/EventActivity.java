@@ -3,6 +3,10 @@ package com.adeebnqo.alarmapp.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -32,8 +36,6 @@ public class EventActivity extends Activity implements View.OnClickListener{
     private Toolbar toolbar;
     private TextView duration;
     private TextView startTime;
-    TextView activityTitle;
-
     private Alarm chosenAlarm;
 
     private ToggleButton monday;
@@ -85,6 +87,15 @@ public class EventActivity extends Activity implements View.OnClickListener{
         toolbar = (Toolbar) findViewById(R.id.event_detail_tooolbar);
         toolbar.inflateMenu(R.menu.event_detail);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        Drawable mDrawable;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mDrawable = getDrawable(R.drawable.ic_arrow_back);
+        } else {
+            mDrawable = getResources().getDrawable(R.drawable.ic_arrow_back);
+        }
+        if (mDrawable != null) {
+            mDrawable.setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY));
+        }
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         toolbar.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
