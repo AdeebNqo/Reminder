@@ -3,6 +3,8 @@ package com.adeebnqo.alarmapp.activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,12 +18,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import com.adeebnqo.alarmapp.R;
-import com.adeebnqo.alarmapp.adapters.NavAdapter;
-import com.adeebnqo.alarmapp.exceptions.EventAddException;
+import com.adeebnqo.alarmapp.activity.intro.Introduction;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
 import com.adeebnqo.alarmapp.models.NavigationItem;
-import com.adeebnqo.alarmapp.utils.ToastUtil;
 import com.android.alarmclock.Alarm;
 
 public class NoEventsActivity extends ActionBarActivity implements AdapterView.OnItemClickListener{
@@ -54,12 +54,6 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
 
     private void setupNavDrawer(){
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
-
-        navItems.add(new NavigationItem(R.drawable.information_outline, aboutTitle));
-        NavAdapter adapter = new NavAdapter(NoEventsActivity.this, R.id.left_drawer, navItems);
-        leftDrawer.setAdapter(adapter);
-        leftDrawer.setOnItemClickListener(this);
 
         drawerToggle = new ActionBarDrawerToggle(this ,drawerLayout,toolbar,R.string.drawer_open,R.string.drawer_close) {
 
@@ -72,9 +66,31 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
             }
         };
 
+        NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+        view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.navigation_product_tour: {
+                        Intent intent = new Intent(NoEventsActivity.this, Introduction.class);
+                        startActivity(intent);
+                        break;
+                    }
+                    case R.id.navigation_about_app: {
+                        Intent intent = new Intent(NoEventsActivity.this, AdvertActivity.class);
+                        startActivity(intent);
+                        break;
+                    }
+                }
+
+                menuItem.setChecked(true);
+                drawerLayout.closeDrawers();
+                return true;
+            }
+        });
+
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary));
         drawerLayout.setDrawerListener(drawerToggle);
-        drawerLayout.closeDrawer(leftDrawer);
     }
 
     private void setupToolbar(){
@@ -90,7 +106,7 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(leftDrawer)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
             drawerLayout.closeDrawers();
         }else{
             super.onBackPressed();
