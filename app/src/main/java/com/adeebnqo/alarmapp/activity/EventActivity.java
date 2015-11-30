@@ -96,7 +96,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
         if (mDrawable != null) {
             mDrawable.setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY));
         }
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationIcon(mDrawable);
         toolbar.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

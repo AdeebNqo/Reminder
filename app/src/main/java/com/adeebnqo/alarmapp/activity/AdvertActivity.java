@@ -37,6 +37,7 @@ public class AdvertActivity extends Activity {
         if (toolbar == null){
             toolbar = (Toolbar) findViewById(R.id.advert_tooolbar);
             toolbar.setTitle(getString(R.string.title_activity_advert));
+            toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
