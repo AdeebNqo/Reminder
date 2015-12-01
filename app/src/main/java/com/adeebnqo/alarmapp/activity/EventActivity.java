@@ -18,9 +18,7 @@ import android.view.View;
 import android.widget.ToggleButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.BitSet;
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
@@ -139,7 +137,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (Math.abs(verticalOffset)+30 >= appBarLayout.getTotalScrollRange()) {
+                if (Math.abs(verticalOffset) + 30 >= appBarLayout.getTotalScrollRange()) {
                     //closed
                     if (fab.getVisibility() != View.GONE) {
                         fab.setVisibility(View.GONE);
@@ -204,42 +202,11 @@ public class EventActivity extends Activity implements View.OnClickListener{
         friday = (ToggleButton) findViewById(R.id.button_friday); friday.setOnClickListener(this);
         saturday = (ToggleButton) findViewById(R.id.button_saturday); saturday.setOnClickListener(this);
         sunday = (ToggleButton) findViewById(R.id.button_sunday); sunday.setOnClickListener(this);
+        ToggleButton[] dayButtons = {monday, tuesday, wednesday, thursday, friday, saturday, sunday};
 
-        //setting color of day icons based on click status
-        Set<Integer> repeatDays =  new HashSet<>(); //TODO : chosenAlarm.getDays();
-        if (null != repeatDays){
-            for (Integer day : repeatDays){
-                switch(day){
-                    case Calendar.MONDAY:{
-                        monday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.TUESDAY:{
-                        tuesday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.WEDNESDAY:{
-                        wednesday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.THURSDAY:{
-                        thursday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.FRIDAY:{
-                        friday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.SATURDAY:{
-                        saturday.setActivated(true);
-                        break;
-                    }
-                    case Calendar.SUNDAY:{
-                        sunday.setActivated(true);
-                        break;
-                    }
-                }
-            }
+        boolean[] setDays  = chosenAlarm.daysOfWeek.getBooleanArray();
+        for (int i=0; i<setDays.length; ++i) {
+            dayButtons[i].setActivated(setDays[i]);
         }
     }
 
@@ -256,71 +223,118 @@ public class EventActivity extends Activity implements View.OnClickListener{
             ToggleButton butt = (ToggleButton) view;
             butt.setActivated(!butt.isActivated());
 
-            Set<Integer> currentSelectedDays = new HashSet<>();//TODO : chosenAlarm.getDays();
+            int codedDays = chosenAlarm.daysOfWeek.getCoded();
+            BitSet daysOfWeekBits;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                daysOfWeekBits = BitSet.valueOf(new long[]{codedDays});
+            } else {
+                daysOfWeekBits = getBitSet(codedDays);
+            }
 
             int buttonId = butt.getId();
             switch (buttonId){
                 case R.id.button_monday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.MONDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.MONDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(0);
+                    } else {
+                        daysOfWeekBits.clear(0);
                     }
                     break;
                 }
                 case R.id.button_tuesday:{
                     if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.TUESDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.TUESDAY);
+                        daysOfWeekBits.set(1);
+                    } else {
+                        daysOfWeekBits.clear(1);
                     }
                     break;
                 }
                 case R.id.button_wednesday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.WEDNESDAY);
-                    }else{
-                        currentSelectedDays.add(Calendar.WEDNESDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(2);
+                    } else {
+                        daysOfWeekBits.clear(2);
                     }
                     break;
                 }
                 case R.id.button_thursday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.THURSDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.THURSDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(3);
+                    } else {
+                        daysOfWeekBits.clear(3);
                     }
                     break;
                 }
                 case R.id.button_friday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.FRIDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.FRIDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(4);
+                    } else {
+                        daysOfWeekBits.clear(4);
                     }
                     break;
                 }
                 case R.id.button_saturday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.SATURDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.SATURDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(5);
+                    } else {
+                        daysOfWeekBits.clear(5);
                     }
                     break;
                 }
                 case R.id.button_sunday:{
-                    if (butt.isActivated()){
-                        currentSelectedDays.add(Calendar.SUNDAY);
-                    }else{
-                        currentSelectedDays.remove(Calendar.SUNDAY);
+                    if (butt.isActivated()) {
+                        daysOfWeekBits.set(6);
+                    } else {
+                        daysOfWeekBits.clear(6);
                     }
                     break;
                 }
             }
 
-            //updating days
-            //TODO : eventManager.updateEventDays(chosenAlarm, currentSelectedDays);
+            try {
+
+                CustomAlarms.deleteAlarm(chosenAlarm);
+                chosenAlarm.daysOfWeek = new Alarm.DaysOfWeek(getIntFromBitset(daysOfWeekBits));
+                CustomAlarms.addAlarm(chosenAlarm);
+
+            } catch(Exception e) {
+                ToastUtil.showAppMsg(getString(R.string.internal_error));
+                e.printStackTrace();
+            }
         }
+    }
+
+    /*
+     *
+     * Arne Burmeister
+     * http://stackoverflow.com/a/2473719/1984350
+     *
+     */
+    public static BitSet getBitSet(int value) {
+        BitSet bits = new BitSet();
+        int index = 0;
+        while (value != 0L) {
+            if (value % 2L != 0) {
+                bits.set(index);
+            }
+            ++index;
+            value = value >>> 1;
+        }
+        return bits;
+    }
+
+    /*
+    *
+    *Arne Burmeister
+    * http://stackoverflow.com/a/2473719/1984350
+    *
+    */
+    public static int getIntFromBitset(BitSet bits) {
+        int value = 0;
+        for (int i = 0; i < bits.length(); ++i) {
+            value += bits.get(i) ? (1L << i) : 0L;
+        }
+        return value;
     }
 
     @Override
@@ -329,7 +343,7 @@ public class EventActivity extends Activity implements View.OnClickListener{
         if (requestCode == EVENT_SCREEN_CODE && resultCode == RESULT_OK){
 
             Alarm editedEvent  = data.getExtras().getParcelable(BundleExtras.Event_OBJECT.toString());
-            //TODO : editedEvent.setDays(chosenAlarm.getDays());
+            editedEvent.daysOfWeek = chosenAlarm.daysOfWeek;
             editedEvent.id = chosenAlarm.id;
 
             try {
