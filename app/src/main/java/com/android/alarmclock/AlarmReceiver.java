@@ -23,6 +23,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.BroadcastReceiver;
+import android.media.AudioManager;
 import android.os.Parcel;
 import com.adeebnqo.alarmapp.R;
 import java.text.SimpleDateFormat;
@@ -40,21 +41,17 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.v("onReceived called!");
         if (Alarms.ALARM_KILLED.equals(intent.getAction())) {
-            Log.v("izolo ekkkkkkkk c");
             // The alarm has been killed, update the notification
             updateNotification(context, (Alarm)
                     intent.getParcelableExtra(Alarms.ALARM_INTENT_EXTRA),
                     intent.getIntExtra(Alarms.ALARM_KILLED_TIMEOUT, -1));
             return;
         } else if (Alarms.CANCEL_SNOOZE.equals(intent.getAction())) {
-            Log.v("izolo ekkkkkkkk d");
             Alarms.saveSnoozeAlert(context, -1, -1);
             return;
         }
 
-        Log.v("izolo ekkkkkkkk a");
         Alarm alarm = null;
         // Grab the alarm from the intent. Since the remote AlarmManagerService
         // fills in the Intent to add some extra data, it must unparcel the
@@ -67,7 +64,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             in.setDataPosition(0);
             alarm = Alarm.CREATOR.createFromParcel(in);
         }
-        Log.v("izolo ekkkkkkkk b");
 
         if (alarm == null) {
             Log.v("AlarmReceiver failed to parse the alarm from the intent");
@@ -143,7 +139,21 @@ public class AlarmReceiver extends BroadcastReceiver {
         String label = alarm.getLabelOrDefault(context);
         Notification n = new Notification(R.drawable.stat_notify_alarm,
                 label, alarm.time);
-        n.setLatestEventInfo(context, label, "asdsadasddsad",
+
+        String ringerModeText = "";
+        switch (alarm.ringerMode) {
+            case AudioManager.RINGER_MODE_NORMAL:
+                ringerModeText = context.getString(R.string.normal_ringer_type);
+                break;
+            case AudioManager.RINGER_MODE_SILENT:
+                ringerModeText = context.getString(R.string.mute_ringer_type);
+                break;
+            case AudioManager.RINGER_MODE_VIBRATE:
+                ringerModeText = context.getString(R.string.vibrate_ringer_type);
+                break;
+        }
+        String ringerModeChanged = context.getString(R.string.ringer_is_now,ringerModeText );
+        n.setLatestEventInfo(context, label, ringerModeChanged,
                 pendingNotify);
         n.flags |= Notification.FLAG_SHOW_LIGHTS
                 | Notification.FLAG_ONGOING_EVENT;

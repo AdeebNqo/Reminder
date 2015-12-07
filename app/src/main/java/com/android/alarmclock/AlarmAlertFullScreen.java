@@ -108,7 +108,7 @@ public class AlarmAlertFullScreen extends Activity {
     private void updateLayout() {
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        setContentView(inflater.inflate(R.layout.alarm_alert, null));
+        setContentView(inflater.inflate(R.layout.alarm_alert_actions, null));
 
         /* set clock face */
         SharedPreferences settings =
@@ -130,7 +130,7 @@ public class AlarmAlertFullScreen extends Activity {
         snooze.requestFocus();
         snooze.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                snooze();
+                onBackPressed();
             }
         });
 
@@ -256,9 +256,8 @@ public class AlarmAlertFullScreen extends Activity {
                 if (up) {
                     switch (mVolumeBehavior) {
                         case 1:
-                            snooze();
+                            dismiss(false);
                             break;
-
                         case 2:
                             dismiss(false);
                             break;

@@ -110,4 +110,6 @@
     <string name="about_qoute">"It is a wise thing to be polite; consequently, it is a stupid thing to be rude"\n -A. Schopenhauer</string>
     <string name="changed_ringer">Changed the ringer mode</string>
     <string name="ringer_is_now">Changed ringer mode to %1$s</string>
+    <string name="ok">OK</string>
+    <string name="now">Now</string>
 </resources>
