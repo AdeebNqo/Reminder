@@ -16,6 +16,7 @@
 
 package com.android.alarmclock;
 
+import android.app.AlarmManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -62,7 +63,8 @@ public class AlarmProvider extends ContentProvider {
                        "vibrate INTEGER, " +
                        "message TEXT, " +
                        "alert TEXT," +
-                       "duration INTEGER);");
+                       "duration INTEGER," +
+                        "ringermode INTEGER);");
 
             // insert default alarms
             /*String insertMe = "INSERT INTO alarms " +
@@ -197,6 +199,9 @@ public class AlarmProvider extends ContentProvider {
 
         if (!values.containsKey(Alarm.Columns.DURATION))
             values.put(Alarm.Columns.DURATION, 0);
+
+        if (!values.containsKey(Alarm.Columns.RINGER_MODE))
+            values.put(Alarm.Columns.RINGER_MODE, -1);
 
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long rowId = db.insert("alarms", Alarm.Columns.MESSAGE, values);

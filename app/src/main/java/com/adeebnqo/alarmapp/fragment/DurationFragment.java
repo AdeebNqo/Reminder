@@ -14,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.models.BundleExtras;
+import com.adeebnqo.alarmapp.utils.ToastUtil;
 import com.android.alarmclock.Alarm;
 
 public class DurationFragment extends Fragment {
@@ -138,7 +139,7 @@ public class DurationFragment extends Fragment {
         nextButton.setOnClickListener(nextClickListener);
         prevButton.setOnClickListener(prevClickListener);
 
-        if (currentEvent!=null){
+        if (currentEvent!=null) {
             switch (currentEvent.ringerMode){
                 case AudioManager.RINGER_MODE_VIBRATE:
                     vibrateButton = (RadioButton) view.findViewById(R.id.vibrate_choice);

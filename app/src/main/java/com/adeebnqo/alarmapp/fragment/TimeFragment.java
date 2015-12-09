@@ -1,6 +1,12 @@
 package com.adeebnqo.alarmapp.fragment;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -74,6 +80,16 @@ public class TimeFragment extends Fragment {
 
         timePicker = (TimePicker) view.findViewById(R.id.event_time_picker);
         prevButton = (ImageButton) view.findViewById(R.id.prev_button);
+        Drawable mDrawable;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mDrawable = getActivity().getDrawable(R.drawable.ic_arrow_back);
+        } else {
+            mDrawable = getResources().getDrawable(R.drawable.ic_arrow_back);
+        }
+        if (mDrawable != null) {
+            mDrawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
+        }
+
         nextButton = (ImageButton) view.findViewById(R.id.next_button);
 
         if (nextClickListener == null){

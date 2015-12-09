@@ -13,6 +13,7 @@ import com.adeebnqo.alarmapp.fragment.NameFragment;
 import com.adeebnqo.alarmapp.fragment.TimeFragment;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
+import com.adeebnqo.alarmapp.utils.ToastUtil;
 import com.android.alarmclock.Alarm;
 import com.android.alarmclock.Alarms;
 
@@ -150,7 +151,7 @@ public class CreateNewEventActivity extends FragmentActivity implements NameFrag
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (currentFragment instanceof TimeFragment){
             backPressedOnTime();
-        }else if (currentFragment instanceof DurationFragment){
+        } else if (currentFragment instanceof DurationFragment){
             onBackPressedInDurationScreen();
         }
         else if (currentFragment instanceof NameFragment){

@@ -49,7 +49,7 @@ public class CustomAlarms {
     }
 
     public static void addAlarm(Alarm someAlarm){
-        Alarms.setAlarm(appContext, someAlarm.id, someAlarm.enabled, someAlarm.hour, someAlarm.minutes, someAlarm.daysOfWeek, false, someAlarm.label, someAlarm.label, someAlarm.duration);
+        Alarms.setAlarm(appContext, someAlarm.id, someAlarm.enabled, someAlarm.hour, someAlarm.minutes, someAlarm.daysOfWeek, false, someAlarm.label, someAlarm.label, someAlarm.duration, someAlarm.ringerMode);
 
     }
 

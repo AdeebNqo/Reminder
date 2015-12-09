@@ -64,6 +64,7 @@ public final class Alarm implements Parcelable {
         p.writeParcelable(alert, flags);
         p.writeInt(silent ? 1 : 0);
         p.writeInt(duration);
+        p.writeInt(ringerMode);
     }
     //////////////////////////////
     // end Parcelable apis
@@ -134,6 +135,12 @@ public final class Alarm implements Parcelable {
          */
         public static final String DURATION = "duration";
 
+        /**
+         * Ringer mode of the alarm
+         * <P>Type: INTEGER</P>
+         */
+        public static final String RINGER_MODE = "ringermode";
+
 
         /**
          * The default sort order for this table
@@ -146,7 +153,7 @@ public final class Alarm implements Parcelable {
 
         static final String[] ALARM_QUERY_COLUMNS = {
             _ID, HOUR, MINUTES, DAYS_OF_WEEK, ALARM_TIME,
-            ENABLED, VIBRATE, MESSAGE, ALERT, DURATION};
+            ENABLED, VIBRATE, MESSAGE, ALERT, DURATION, RINGER_MODE};
 
         /**
          * These save calls to cursor.getColumnIndexOrThrow()
@@ -162,6 +169,7 @@ public final class Alarm implements Parcelable {
         public static final int ALARM_MESSAGE_INDEX = 7;
         public static final int ALARM_ALERT_INDEX = 8;
         public static final int ALARM_DURATION_INDEX = 9;
+        public static final int ALARM_RINGER_MODE_INDEX = 10;
     }
     //////////////////////////////
     // End column definitions
@@ -195,6 +203,7 @@ public final class Alarm implements Parcelable {
         label = c.getString(Columns.ALARM_MESSAGE_INDEX);
         duration = c.getInt(Columns.ALARM_DURATION_INDEX);
         String alertString = c.getString(Columns.ALARM_ALERT_INDEX);
+        ringerMode = c.getInt(Columns.ALARM_RINGER_MODE_INDEX);
         if (Alarms.ALARM_ALERT_SILENT.equals(alertString)) {
             if (Log.LOGV) {
                 Log.v("Alarm is marked as silent");
@@ -226,6 +235,7 @@ public final class Alarm implements Parcelable {
         alert = (Uri) p.readParcelable(null);
         silent = p.readInt() == 1;
         duration = p.readInt();
+        ringerMode = p.readInt();
     }
 
     public String getLabelOrDefault(Context context) {

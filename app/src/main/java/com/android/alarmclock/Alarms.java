@@ -164,7 +164,7 @@ public class Alarms {
     public static long setAlarm(
             Context context, int id, boolean enabled, int hour, int minutes,
             Alarm.DaysOfWeek daysOfWeek, boolean vibrate, String message,
-            String alert, int duration) {
+            String alert, int duration, int ringermode) {
 
         ContentValues values = new ContentValues(8);
         ContentResolver resolver = context.getContentResolver();
@@ -188,6 +188,7 @@ public class Alarms {
         values.put(Alarm.Columns.MESSAGE, message);
         values.put(Alarm.Columns.ALERT, alert);
         values.put(Alarm.Columns.DURATION, duration);
+        values.put(Alarm.Columns.RINGER_MODE, ringermode);
         int num = resolver.update(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id),
                 values, null, null);
         if (num == 0) {

@@ -22,6 +22,7 @@ import com.adeebnqo.alarmapp.interfaces.RecyclerViewOnItemClickListener;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.models.BundleExtras;
 import com.adeebnqo.alarmapp.utils.ApplicationData;
+import com.adeebnqo.alarmapp.utils.ToastUtil;
 import com.android.alarmclock.Alarm;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> implements RecyclerViewOnItemClickListener{
@@ -118,7 +119,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         }
 
         //changing ringer icon
-        switch (chosenEvent.ringerMode){
+        switch (chosenEvent.ringerMode) {
             case AudioManager.RINGER_MODE_NORMAL:{
                 holder.ringerType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_normal_ring));
                 break;
