@@ -277,6 +277,10 @@ public class EventListActivity extends ActionBarActivity{
                 startEmailApp();
                 break;
             }
+            case R.id.settings: {
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

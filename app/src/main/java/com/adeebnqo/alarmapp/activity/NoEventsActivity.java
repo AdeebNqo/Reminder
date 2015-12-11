@@ -137,6 +137,10 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
                 startActivity(intent);
                 break;
             }
+            case R.id.settings: {
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

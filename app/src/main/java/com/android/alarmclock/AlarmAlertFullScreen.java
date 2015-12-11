@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -39,8 +40,16 @@ import android.widget.Toast;
 import android.widget.TextView;
 
 import com.adeebnqo.alarmapp.R;
+import com.adeebnqo.alarmapp.activity.CreateNewEventActivity;
+import com.adeebnqo.alarmapp.models.CancelAlarmEvent;
+import com.adeebnqo.alarmapp.models.HandleAlarmEvent;
 
 import java.util.Calendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Alarm Clock alarm alert: pops visible indicator and plays alarm
@@ -67,6 +76,10 @@ public class AlarmAlertFullScreen extends Activity {
             }
         }
     };
+
+    private static final ScheduledExecutorService worker =
+            Executors.newSingleThreadScheduledExecutor();
+
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -97,6 +110,26 @@ public class AlarmAlertFullScreen extends Activity {
 
         // Register to get the alarm killed intent.
         registerReceiver(mReceiver, new IntentFilter(Alarms.ALARM_KILLED));
+
+        Runnable task = new Runnable() {
+            public void run() {
+                onBackPressed();
+            }
+        };
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        int seconds = Integer.valueOf(sharedPrefs.getString("dialog_time", "30"));
+        worker.schedule(task, seconds, TimeUnit.SECONDS);
+
+        EventBus.getDefault().post(new HandleAlarmEvent(mAlarm));
+
+        Runnable cancelAlarmTask = new Runnable() {
+            @Override
+            public void run() {
+                dismiss(false);
+                EventBus.getDefault().post(new CancelAlarmEvent(mAlarm));
+            }
+        };
+        worker.schedule(cancelAlarmTask, mAlarm.duration, TimeUnit.MINUTES);
     }
 
     private void setTitle() {
@@ -139,6 +172,7 @@ public class AlarmAlertFullScreen extends Activity {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         dismiss(false);
+                        EventBus.getDefault().post(new CancelAlarmEvent(mAlarm));
                     }
                 });
 

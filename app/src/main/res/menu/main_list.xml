@@ -10,4 +10,8 @@
     <item android:id="@+id/action_contact_dev"
         android:title="@string/contact_support"
         switchringer:showAsAction="never"/>
+
+    <item android:id="@+id/settings"
+        android:title="@string/settings"
+        switchringer:showAsAction="never"/>
 </menu>
