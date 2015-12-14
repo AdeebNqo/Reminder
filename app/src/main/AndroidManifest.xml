@@ -16,7 +16,7 @@
     <application
         android:name=".activity.SwitchRinger"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher_alarmclock"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_label"
         android:theme="@style/AppTheme">
         <meta-data
