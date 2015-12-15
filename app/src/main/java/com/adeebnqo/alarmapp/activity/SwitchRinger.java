@@ -2,12 +2,11 @@ package com.adeebnqo.alarmapp.activity;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.scheduling.ScheduleReceiver;
+import com.adeebnqo.alarmapp.utils.AnalyticsManager;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.models.BundleExtras;
 import com.adeebnqo.alarmapp.utils.AppNotification;
@@ -32,6 +31,7 @@ public class SwitchRinger extends Application {
         AppNotification.Init(getApplicationContext());
         CustomAlarms.Init(getApplicationContext());
         scheduler = new ScheduleReceiver(getApplicationContext());
+        AnalyticsManager.init(this);
 
         //Intro screens
         SharedPreferences settings = getSharedPreferences(Constants.SETTINGS_FILENAME, MODE_PRIVATE);
@@ -42,7 +42,7 @@ public class SwitchRinger extends Application {
         }
     }
 
-    synchronized Tracker getTracker() {
+    public synchronized Tracker getTracker() {
         if (tracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
             analytics.enableAutoActivityReports(this);

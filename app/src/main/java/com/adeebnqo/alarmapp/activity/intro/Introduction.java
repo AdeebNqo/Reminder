@@ -15,9 +15,6 @@ import com.adeebnqo.alarmapp.models.BundleExtras;
 import com.adeebnqo.alarmapp.utils.ApplicationData;
 import com.adeebnqo.alarmapp.utils.Constants;
 
-/**
- * Created by adeeb on 7/2/15.
- */
 public class Introduction extends AppIntro {
     @Override
     public void init(Bundle bundle) {
@@ -42,18 +39,15 @@ public class Introduction extends AppIntro {
 
         setIntroShown();
 
-        Intent intent = new Intent(Introduction.this, EventListActivity.class);
-        startActivity(intent);
-        if (isTaskRoot()) {
-            finish();
-        }
+        setResult(RESULT_OK);
+        finish();
     }
 
-    private void setIntroShown(){
+    private void setIntroShown() {
         SharedPreferences settings = getSharedPreferences(Constants.SETTINGS_FILENAME, MODE_PRIVATE);
         SharedPreferences.Editor settingsEditor = settings.edit();
         settingsEditor.putBoolean(BundleExtras.INTRO_SHOWN.toString(), true);
-        settingsEditor.commit();
+        settingsEditor.apply();
     }
 
 }

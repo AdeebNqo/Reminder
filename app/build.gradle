@@ -8,6 +8,8 @@ android {
         applicationId "com.adeebnqo.alarmapp"
         minSdkVersion 14
         targetSdkVersion 18
+        versionCode 2
+        versionName '1.10'
     }
 
     signingConfigs {
@@ -39,11 +41,11 @@ android {
     }
     productFlavors {
         free {
-            buildConfigField "boolean", "IS_PAID", "false"
+            applicationId "com.adeebnqo.alarmapp.free"
         }
 
         paid {
-            buildConfigField "boolean", "IS_PAID", "true"
+            applicationId "com.adeebnqo.alarmapp.pro"
         }
     }
 }
@@ -53,7 +55,7 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.google.android.gms:play-services-ads:7.8.0'
+    freeCompile 'com.google.android.gms:play-services-ads:7.8.0'
     compile 'com.google.android.gms:play-services-analytics:7.3.0'
     compile 'com.github.paolorotolo:appintro:2.0.0'
     compile 'de.greenrobot:eventbus:2.4.0'

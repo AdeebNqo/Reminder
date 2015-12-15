@@ -45,14 +45,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activity.AdvertActivity"
             android:label="@string/title_activity_advert"
             android:launchMode="singleInstance"/>
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
         <activity android:name=".activity.CreateNewEventActivity" />
         <activity android:name=".activity.EventActivity" />
         <activity android:name=".activity.EventListActivity" />
@@ -123,7 +120,7 @@
         </receiver>
         <receiver
             android:name="com.android.alarmclock.AnalogAppWidgetProvider"
-            android:icon="@drawable/ic_widget_analog_clock"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/analog_gadget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -136,7 +133,12 @@
 
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/settings"/>
+            android:label="@string/settings"
+            android:parentActivityName=".activity.LandingActivityLoader">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.adeebnqo.alarmapp.activity.LandingActivityLoader" />
+        </activity>
     </application>
 
 </manifest>

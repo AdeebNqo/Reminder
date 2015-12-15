@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:defaultValue="180"
+        android:defaultValue="30"
         android:entries="@array/pref_title_dialog_dismiss_titles"
         android:entryValues="@array/pref_notif_dialog_time_values"
         android:key="dialog_time"

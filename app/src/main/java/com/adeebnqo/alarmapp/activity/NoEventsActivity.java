@@ -1,7 +1,7 @@
 package com.adeebnqo.alarmapp.activity;
 
 import android.content.Intent;
-import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
+import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.activity.intro.Introduction;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
@@ -31,7 +32,7 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
 
     private Toolbar toolbar;
     private TextView noEventsText;
-
+    private String developerEmail = "androidpot107@gmail.com";
 
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
@@ -137,6 +138,10 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
                 startActivity(intent);
                 break;
             }
+            case R.id.action_contact_dev:{
+                startEmailApp();
+                break;
+            }
             case R.id.settings: {
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
@@ -171,5 +176,11 @@ public class NoEventsActivity extends ActionBarActivity implements AdapterView.O
             startActivity(intent);
             finish();
         }
+    }
+
+    private void startEmailApp(){
+        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", developerEmail, null));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.this_is_about, getString(R.string.app_name)+ BuildConfig.VERSION_NAME));
+        startActivity(Intent.createChooser(intent, getString(R.string.email_dev)));
     }
 }

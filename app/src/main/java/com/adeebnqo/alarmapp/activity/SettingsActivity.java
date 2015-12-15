@@ -1,27 +1,30 @@
 package com.adeebnqo.alarmapp.activity;
 
-
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.NavUtils;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
-
+import android.widget.LinearLayout;
 import com.adeebnqo.alarmapp.R;
-
+import com.adeebnqo.alarmapp.utils.AnalyticsManager;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -95,11 +98,69 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent().getParent().getParent();
+        Toolbar toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+        root.addView(toolbar, 0);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            if (!super.onMenuItemSelected(featureId, item)) {
+                NavUtils.navigateUpFromSameTask(this);
+            }
+            return true;
         }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public void onHeaderClick(Header header, int position) {
+        if (header.id == R.id.credits_dialog) {
+
+            AnalyticsManager.getInstance().sendEvent("Views", "Credits");
+
+            String jsonString="";
+
+            try {
+                InputStream is = getResources().openRawResource(R.raw.credits);
+                Writer writer = new StringWriter();
+                char[] buffer = new char[1024];
+                try {
+                    Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    int n;
+                    while ((n = reader.read(buffer)) != -1) {
+                        writer.write(buffer, 0, n);
+                    }
+                } finally {
+                    is.close();
+                }
+                jsonString = writer.toString();
+
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.pref_header_about))
+                        .setMessage(jsonString)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(R.mipmap.ic_launcher)
+                        .show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        super.onHeaderClick(header, position);
     }
 
     /**

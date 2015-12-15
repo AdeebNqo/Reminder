@@ -16,6 +16,8 @@ import com.android.alarmclock.Alarms;
 
 public class LandingActivityLoader extends Activity {
 
+    private final int INTRO_CODE = 1;
+
     boolean introBeenShown;
     @Override
     protected void onStart() {
@@ -77,7 +79,14 @@ public class LandingActivityLoader extends Activity {
 
     public void showIntro(){
         Intent intent = new Intent(LandingActivityLoader.this, Introduction.class);
-        startActivity(intent);
-        finish();
+        startActivityForResult(intent, INTRO_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == INTRO_CODE) {
+            startMainScreen();
+        }
     }
 }
