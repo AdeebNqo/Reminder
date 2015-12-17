@@ -139,6 +139,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.adeebnqo.alarmapp.activity.LandingActivityLoader" />
         </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0" />
     </application>
 
 </manifest>

@@ -24,7 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.BroadcastReceiver;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Parcel;
+
+import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.R;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,8 +140,18 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Use the alarm's label or the default label as the ticker text and
         // main text of the notification.
         String label = alarm.getLabelOrDefault(context);
-        Notification n = new Notification(R.drawable.stat_notify_alarm,
-                label, alarm.time);
+        Notification.Builder builder = new Notification.Builder(context);
+        builder.setAutoCancel(false);
+        builder.setWhen(alarm.time);
+        builder.setTicker(label);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+
+        Notification n;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+            n = builder.getNotification();
+        } else {
+            n = builder.build();
+        }
 
         String ringerModeText = "";
         switch (alarm.ringerMode) {
@@ -190,16 +203,24 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Update the notification to indicate that the alert has been
         // silenced.
         String label = alarm.getLabelOrDefault(context);
-        Notification n = new Notification(R.drawable.stat_notify_alarm,
-                label, alarm.time);
-        n.setLatestEventInfo(context, label,
-                context.getString(R.string.alarm_alert_alert_silenced, timeout),
-                intent);
-        n.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        Notification.Builder builder = new Notification.Builder(context);
+        builder.setAutoCancel(false);
+        builder.setWhen(alarm.time);
+        builder.setTicker(label);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+
         // We have to cancel the original notification since it is in the
         // ongoing section and we want the "killed" notification to be a plain
         // notification.
         nm.cancel(alarm.id);
-        nm.notify(alarm.id, n);
+        Notification notif;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+            notif = builder.getNotification();
+        } else {
+            notif = builder.build();
+        }
+        nm.notify(alarm.id, notif);
     }
 }

@@ -32,9 +32,12 @@ public class AdvertActivity extends Activity {
         }
 
         AnalyticsManager.getInstance().sendEvent("Views", "About screen");
+
+        TextView aboutText = (TextView) findViewById(R.id.textView5);
+        aboutText.setText(getString(R.string.about, BuildConfig.VERSION_NAME, BuildConfig.CodeName));
     }
 
-    private void setupToolbar(){
+    private void setupToolbar() {
         if (toolbar == null){
             toolbar = (Toolbar) findViewById(R.id.advert_tooolbar);
             toolbar.setTitle(getString(R.string.title_activity_advert));

@@ -83,8 +83,8 @@
 
     <!--other-->
     <string name="about">
-        Version:  1.10\n\n
-        Codename: S.Kubheka\n\n
+        Version:  %1$s \n\n
+        Codename: %2$s \n\n
     </string>
     <string name="title_activity_base">BaseActivity</string>
     <string name="app_name_switch">Switch</string>

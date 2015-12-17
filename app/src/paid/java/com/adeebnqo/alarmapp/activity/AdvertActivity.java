@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
+
+import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.R;
 
 public class AdvertActivity extends Activity {
@@ -16,6 +19,9 @@ public class AdvertActivity extends Activity {
         setContentView(R.layout.activity_about);
 
         setupToolbar();
+
+        TextView aboutText = (TextView) findViewById(R.id.textView5);
+        aboutText.setText(getString(R.string.about, BuildConfig.VERSION_NAME, BuildConfig.CodeName));
     }
 
     private void setupToolbar(){
