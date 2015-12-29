@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="ga_trackingId">0</string>
+    <string name="ga_trackingId">UA-66155430-1</string>
 
     <bool name="ga_autoActivityTracking">true</bool>
-
+s
     <bool name="ga_reportUncaughtExceptions">true</bool>
 
 </resources>

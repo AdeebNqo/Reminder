@@ -48,12 +48,15 @@ public class CustomAlarms {
         addAlarm(someAlarm);
     }
 
-    public static void addAlarm(Alarm someAlarm){
+    public static void addAlarm(Alarm someAlarm) {
         Alarms.setAlarm(appContext, someAlarm.id, someAlarm.enabled, someAlarm.hour, someAlarm.minutes, someAlarm.daysOfWeek, false, someAlarm.label, someAlarm.label, someAlarm.duration, someAlarm.ringerMode);
-
     }
 
     public  static boolean hasAlarms(){
         return getAlarms().size() > 0;
+    }
+
+    public static boolean hasAlarm(int id) {
+        return Alarms.getAlarm(appContext.getContentResolver(), id) != null;
     }
 }

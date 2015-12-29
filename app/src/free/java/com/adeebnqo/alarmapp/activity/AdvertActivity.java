@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.view.View;
-
+import android.widget.TextView;
 import com.adeebnqo.alarmapp.utils.AnalyticsManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;

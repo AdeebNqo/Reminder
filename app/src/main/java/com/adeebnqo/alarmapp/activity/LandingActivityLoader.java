@@ -1,16 +1,20 @@
 package com.adeebnqo.alarmapp.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 
 import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.R;
 import com.adeebnqo.alarmapp.activity.intro.Introduction;
 import com.adeebnqo.alarmapp.models.BundleExtras;
+import com.adeebnqo.alarmapp.services.CalendarSyncService;
 import com.adeebnqo.alarmapp.utils.Constants;
 import com.android.alarmclock.Alarms;
 
@@ -34,6 +38,10 @@ public class LandingActivityLoader extends Activity {
             ((SwitchRinger) getApplication()).getTracker();
         }
 
+        if (!isMyServiceRunning(CalendarSyncService.class)) {
+            startService(new Intent(this, CalendarSyncService.class));
+        }
+
         introBeenShown = isIntroBeenShown();
 
         if (!introBeenShown){
@@ -53,6 +61,16 @@ public class LandingActivityLoader extends Activity {
             startMainScreen();
 
         }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isIntroBeenShown(){

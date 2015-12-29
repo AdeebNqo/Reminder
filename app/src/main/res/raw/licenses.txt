@@ -1,0 +1,1 @@
+1. easy-content-providers, Roman Kushnarenko, Apache License 2.0

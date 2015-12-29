@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.adeebnqo.alarmapp">
 
     <original-package android:name="com.android.alarmclock" />
@@ -12,11 +13,13 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <application
         android:name=".activity.SwitchRinger"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        tools:replace="android:label"
         android:label="@string/app_label"
         android:theme="@style/AppTheme">
         <meta-data
@@ -139,6 +142,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.adeebnqo.alarmapp.activity.LandingActivityLoader" />
         </activity>
+
+        <service android:name=".services.CalendarSyncService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

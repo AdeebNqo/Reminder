@@ -2,6 +2,8 @@ package com.adeebnqo.alarmapp.activity;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+
+import com.adeebnqo.alarmapp.BuildConfig;
 import com.adeebnqo.alarmapp.loaders.CustomAlarms;
 import com.adeebnqo.alarmapp.scheduling.ScheduleReceiver;
 import com.adeebnqo.alarmapp.utils.AnalyticsManager;
@@ -26,7 +28,10 @@ public class SwitchRinger extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
 
         //poor man's dependency injection -- injecting application context
         ToastUtil.setContext(getApplicationContext());

@@ -159,6 +159,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 e.printStackTrace();
             }
             return;
+        } else if (header.id == R.id.ringer_mode_pref) {
+            //TODO add pref with key default_ringermode
         }
         super.onHeaderClick(header, position);
     }
