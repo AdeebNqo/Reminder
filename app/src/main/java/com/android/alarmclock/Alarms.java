@@ -192,13 +192,11 @@ public class Alarms {
         int num = resolver.update(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id),
                 values, null, null);
         if (num == 0) {
-                resolver.insert(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id), values);
+            resolver.insert(ContentUris.withAppendedId(Alarm.Columns.CONTENT_URI, id), values);
         }
-        Log.v("foobar Changed "+num+" rows man!");
 
         long timeInMillis =
                 calculateAlarm(hour, minutes, daysOfWeek).getTimeInMillis();
-        Log.v("foobar : timeInMillis is "+timeInMillis);
 
         if (enabled) {
             // If this alarm fires before the next snooze, clear the snooze to
@@ -318,15 +316,12 @@ public class Alarms {
      * otherwise loads all alarms, activates next alert.
      */
     public static void setNextAlert(final Context context) {
-        Log.v("foobar : setNextAlert is called");
 
         if (!enableSnoozeAlert(context)) {
             Alarm alarm = calculateNextAlert(context);
             if (alarm != null) {
-                Log.v("foobar : alarm is not null");
                 enableAlert(context, alarm, alarm.time);
             } else {
-                Log.v("foobar : alarm is null");
                 disableAlert(context);
             }
         }

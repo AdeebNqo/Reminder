@@ -56,7 +56,17 @@ public class CustomAlarms {
         return getAlarms().size() > 0;
     }
 
-    public static boolean hasAlarm(int id) {
-        return Alarms.getAlarm(appContext.getContentResolver(), id) != null;
+    public static boolean containsAlarmWithTitle(String label) {
+
+        Cursor cursor = Alarms.getAlarmsCursor(appContext.getContentResolver());
+        while(cursor.moveToNext()) {
+            Alarm someAlarm = new Alarm(cursor);
+            if (someAlarm.label.startsWith(label)) {
+                cursor.close();
+                return true;
+            }
+        }
+        cursor.close();
+        return false;
     }
 }
