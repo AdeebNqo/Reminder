@@ -2,6 +2,8 @@ package com.adeebnqo.alarmapp.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
+
 import com.android.alarmclock.Alarm;
 import com.android.alarmclock.Alarms;
 
@@ -61,9 +63,12 @@ public class CustomAlarms {
         Cursor cursor = Alarms.getAlarmsCursor(appContext.getContentResolver());
         while(cursor.moveToNext()) {
             Alarm someAlarm = new Alarm(cursor);
-            if (someAlarm.label.startsWith(label)) {
+            boolean isEmpty = !TextUtils.isEmpty(someAlarm.label);
+            if (isEmpty && someAlarm.label.startsWith(label)) {
                 cursor.close();
                 return true;
+            } else {
+                Alarms.deleteAlarm(appContext, someAlarm.id);
             }
         }
         cursor.close();

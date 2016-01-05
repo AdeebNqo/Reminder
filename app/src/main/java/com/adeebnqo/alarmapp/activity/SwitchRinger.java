@@ -29,9 +29,7 @@ public class SwitchRinger extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics());
-        }
+        Fabric.with(this, new Crashlytics());
 
         //poor man's dependency injection -- injecting application context
         ToastUtil.setContext(getApplicationContext());
